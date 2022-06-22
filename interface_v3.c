@@ -105,7 +105,7 @@ if (mode_sel == 1)
 	}
 else if(mode_sel == 2)			//MUX OUT CHANNEL SELECTION
 	{
-		printf("Select what do you want to display on CH1:\n PID_mixer = 1, // = 2, PID_CH1 = 3, PID_OFFSET_CH1 = 4, // : 5, dither_out = 6, OFFSET_PID_MIXER = 7, ERROR_SIGNAL(AFTER_LPF) <(-)> = 8  \n");
+		printf("Select what do you want to display on CH1:\n PID_mixer = 1, INTEGRAL ERROR PID (debug) = 2, PID_CH1 = 3, PID_OFFSET_CH1 = 4, // : 5, dither_out = 6, OFFSET_PID_MIXER = 7, ERROR_SIGNAL(AFTER_LPF) <(-)> = 8  \n");
 		scanf("%d", &mux_ch1); 
 
 		printf("Select what do you want to display on CH2:\n ERROR_SIGNAL(AFTER LPF) = 1, MIXER_EXT_DDS(No filter) = 2, cosine_normal = 3, cos_scaled = 4, pd_ext_mixed = 5, phase_normal = 6, CH2 IN to OUT (see noise given by RP) = 7, MIXER_INT_DDS(No Filter) = 8 \n");
