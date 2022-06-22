@@ -50,14 +50,12 @@ if (mode_sel == 1)
 	/*Communication starts */
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
-	//sleep(wait_time);
 	
 	if(*((uint32_t *)(cfg + 8)) == START)
-	{
-	printf("Start transaction:\n");
-	*((uint32_t *)(cfg + 0)) = pid2addr;
-	//sleep(wait_time);
-	}
+		{
+			printf("Start transaction:\n");
+			*((uint32_t *)(cfg + 0)) = pid2addr;
+		}
 
 	if (*((uint32_t *)(cfg + 8)) == pid2addr) 		//Address received correctly
 		{
@@ -67,40 +65,31 @@ if (mode_sel == 1)
 		}
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
-	//sleep(wait_time);
 	
 	if(*((uint32_t *)(cfg + 8)) == START)
-	{
-	printf("Start transaction:\n");
-	*((uint32_t *)(cfg + 0)) = pid1addr;
-	//sleep(wait_time);
-	}
-
-
+		{
+			printf("Start transaction:\n");
+			*((uint32_t *)(cfg + 0)) = pid1addr;
+		}
 	if (*((uint32_t *)(cfg + 8)) == pid1addr) 		//Address received correctly
 		{
 			*((uint32_t *)(cfg + 0)) = ((uint16_t)ki << 16) + (uint16_t)kp;	//FIRST WRITE
-			//sleep(wait_time);
 			printf("FIRST_WRITE = CORRECT\n");
 		}
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
-	//sleep(wait_time);
 	
 	if(*((uint32_t *)(cfg + 8)) == START)
-	{
-	printf("Start transaction:\n");
-	*((uint32_t *)(cfg + 0)) = pid2addr;
-	//sleep(wait_time);
-	}
-
+		{
+			printf("Start transaction:\n");
+			*((uint32_t *)(cfg + 0)) = pid2addr;
+		}
 	if (*((uint32_t *)(cfg + 8)) == pid2addr) 		//Address received correctly
 		{
 			if (kd < 0) 
 				*((uint32_t *)(cfg + 0)) = (uint16_t)kd;
 			else 
 				*((uint32_t *)(cfg + 0)) = (3 << 30) + (uint16_t)kd; 
-			//sleep(wait_time);
 			printf("SECOND_WRITE = CORRECT\n");
 
 		}
@@ -114,12 +103,12 @@ if (mode_sel == 1)
 	printf("VALUES SET: Kp = %Lg, Kp(high gain) = %Lg,  taui = %Lg, taud = %Lg \n", kp_int, kph_int, ki_int, kd_int );
 	printf("REG1: %#010x, REG2: %#010x\n", ((uint32_t)ki << 14) + (uint32_t)kp,  *((uint32_t *)(cfg + 0)) );
 	}
-else if(mode_sel == 2)
+else if(mode_sel == 2)			//MUX OUT CHANNEL SELECTION
 	{
-		printf("Select what do you want to display on CH1:\n PID_internal_dds = 1, PID_ext_dds = 2, PID_CH1 = 3, PID_OFFSET : 4, // : 5, dither_out : 6, offset_pid_int_dds : 7, offset_pid_ext_dds : 8  \n");
+		printf("Select what do you want to display on CH1:\n PID_mixer = 1, // = 2, PID_CH1 = 3, PID_OFFSET_CH1 = 4, // : 5, dither_out = 6, OFFSET_PID_MIXER = 7, ERROR_SIGNAL(AFTER_LPF) <(-)> = 8  \n");
 		scanf("%d", &mux_ch1); 
 
-		printf("Select what do you want to display on CH2:\n beat_normal = 1, beat_external = 2, cosine_normal = 3, cos_scaled : 4, pd_ext_mixed : 5, phase_normal : 6, CH2 IN to OUT (see noise given by RP) : 7, // : 8 \n");
+		printf("Select what do you want to display on CH2:\n ERROR_SIGNAL(AFTER LPF) = 1, MIXER_EXT_DDS(No filter) = 2, cosine_normal = 3, cos_scaled = 4, pd_ext_mixed = 5, phase_normal = 6, CH2 IN to OUT (see noise given by RP) = 7, MIXER_INT_DDS(No Filter) = 8 \n");
 		scanf("%d", &mux_ch2); 
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
@@ -133,52 +122,42 @@ else if(mode_sel == 2)
 	}
 	if (*((uint32_t *)(cfg + 8)) == muxaddr) 		//Address received correctly
 		{ 
-				*((uint32_t *)(cfg + 0)) = (uint32_t)((mux_ch2-1)<<3) + (uint32_t)(mux_ch1-1);
-				//sleep(wait_time);
+			*((uint32_t *)(cfg + 0)) = (uint32_t)((mux_ch2-1)<<3) + (uint32_t)(mux_ch1-1);
 			printf("REG SENT = %#010x\n", *((uint32_t *)(cfg + 0)) );
-				//*((uint32_t *)(cfg + 0)) = UINT32_MAX;
-
 			printf("CHANNEL_SELECT = CORRECT\n");
 		}
 	else printf("CHANNEL_SELECT = NOT CORRECT\n");
 
 	}
-else if(mode_sel == 3)
+else if(mode_sel == 3)		//OFFSET SELECTION PID_MIXER 
 	{
 	
-	printf("Select the offset level for pid_int_dds:\n");
+	printf("Select the offset level for pid_mixer:\n");
 	scanf("%g", &off_ch1);
 	
-	printf("Select the offset level for pid_ext_dds:\n");
-	scanf("%g", &off_ch2);
+	//printf("Select the offset level for pid_ext_dds:\n");
+	//scanf("%g", &off_ch2);
 
 	off_ch1_d = off_ch1 / lsb;
-	off_ch2_d = off_ch2 / lsb;
+	//off_ch2_d = off_ch2 / lsb;
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
-	sleep(wait_time);
-	
 	if(*((uint32_t *)(cfg + 8)) == START)
 	{
 	printf("Start transaction:\n");
 	*((uint32_t *)(cfg + 0)) = offsetaddr;
 	sleep(wait_time);
 	}
-
-
 	if (*((uint32_t *)(cfg + 8)) == offsetaddr) 		//Address received correctly
 		{ 
-				*((uint32_t *)(cfg + 0)) = ((int16_t)(off_ch2_d)<<16) + (int16_t)(off_ch1_d);
-				sleep(wait_time);
-
+			//*((uint32_t *)(cfg + 0)) = ((int16_t)(off_ch2_d)<<16) + (int16_t)(off_ch1_d);   TO USE IN CASE OF A CH2 OFFSET
+			*((uint32_t *)(cfg + 0)) = (int16_t)(off_ch1_d);
 			printf("REG SENT = %#010x\n",	*((uint32_t *)(cfg + 0)) );
 			printf("OFFSET_SELECT = CORRECT\n");
 		}
-
-	
-	
 	}
-else if(mode_sel ==4)
+
+else if(mode_sel ==4)		//DITHER SET
 	{	
 	printf (" Set the length of the Dither, from 1 ms to 10 s (i.e. 0.125, 1.5, 2.25) \n");
 	scanf ("%g", &time_length);
@@ -194,9 +173,6 @@ else if(mode_sel ==4)
 			printf("Max value that you've tried to set is lower than the minimum value. The value is set to +1V \n");
 			max_val_analog = 1;
 		}
-
-	printf (" Set a single (0) or a multiple ramps (1) config: \n ");
-	scanf("%u", &repeat);
 
 	min_val_dig = min_val_analog / lsb;
 	max_val_dig = max_val_analog / lsb;
@@ -220,14 +196,11 @@ else if(mode_sel ==4)
 
 	debug_val1 = ((uint32_t)counter_cfg);
 	debug_val2 = (int16_t)min_val_dig;
-	debug_val3 = (int16_t)max_val_dig;
-	debug_val4 = (1 << 31) + (repeat << 30);	
+	debug_val3 = (int16_t)max_val_dig;	
 
-	printf (" DIT1: %#010x, DIT2: %#010x , DIT3: %#010x , DIT4: %#010x \n", debug_val1, debug_val2, debug_val3, debug_val4);
+	printf (" DIT1: %#010x, DIT2: %#010x , DIT3: %#010x \n", debug_val1, debug_val2, debug_val3);
 	
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready //RESET DITHER + GPIO to AXIS
-	//sleep(wait_time);
-	
 	if(*((uint32_t *)(cfg + 8)) == START)
 	{
 	printf("Start transaction:\n");
@@ -347,7 +320,7 @@ else if (mode_sel == 5)
 	printf("GAIN VALUES: PSR = %d, ISR = %d, DSR = %d\nEnter the new ones:\n", PSR, ISR, DSR);
 	printf("ENTER PSR, accepted values 6,8,10,12,14,16:\n");
 	scanf("%d", &PSR);
-	printf("ENTER ISR, accepted values 16,18,20,22,24,26:\n");
+	printf("ENTER ISR, accepted values 16,18,20,22,24,26,28:\n");
 	scanf("%d", &ISR);
 	printf("ENTER DSR, accepted values 6,8,10,12:\n");
 	scanf("%d", &DSR);
@@ -499,29 +472,34 @@ else if(mode_sel == 8)
 
 else if(mode_sel == 9)
 	{
-	printf("Select the INPUT of the filter:\nmixer_internal_DDS : 0 (default); mixer_external_DDS : 1\n");
+	printf("Select the INPUT of the filter:\nmixer_internal_DDS : 1 (default); mixer_external_DDS : 2\n");
 	scanf("%d", &mux_fil_in);
-	printf("Select the filter at the output of the mixer module:\nIIR_1M_leaky : 1; IIR_600k_leaky : 2; IIR_CONFIGURABLE_1st_order : 3; IIR_CONFIGURABLE_2nd_order : 4; IIR_butterworth_1M_2nd: 5; IIR_butter_500k_2nd: 6; no_filter: 8   \n");
+	printf("Select the filter at the output of the mixer module:\nIIR_1M_leaky : 1; IIR_600k_leaky : 2; IIR_CONFIGURABLE_1st_order : 3; IIR_CONFIGURABLE_2nd_order : 4; IIR_butterworth_1M_2nd: 5; IIR_butter_500k_2nd: 6; IIR_2nd_1M: 7 no_filter: 8   \n");
 	scanf("%d", &mux_fil_out);
 
+	printf("mux_fil_in = %d,mux_fil_out =%d, mux_fil_in uint32 = %zu, mux_fil_out uint32 = %zu\n", mux_fil_in, mux_fil_out, (uint32_t)(mux_fil_in), (uint32_t)(mux_fil_out-1));
 	
-	if( (mux_fil == 3) || (mux_fil == 4)) 
+	if( (mux_fil_out == 3) || (mux_fil_out == 4)) 
 	{
 		printf ("Configure the filter first:\nIf first order selected select 0 for a2 and b2\n");
 	
 	}
+
+	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
+
 	if(*((uint32_t *)(cfg + 8)) == START)
 	{
 	printf("Start transaction:\n");
 	*((uint32_t *)(cfg + 0)) = fil1addr;
-	//sleep(wait_time);
+	printf("REG SENT = %#010x\n", *((uint32_t *)(cfg + 0)) );
 	}
+	printf("REG RECEIVED = %#010x\n", *((uint32_t *)(cfg + 0)) );
 	if (*((uint32_t *)(cfg + 8)) == fil1addr) 		//Address received correctly
-		{ 
-				*((uint32_t *)(cfg + 0)) = mux_fil_in<<3 + (uint32_t)(mux_fil_out-1);
-				//sleep(wait_time);
+		{  
+				*((uint32_t *)(cfg + 0)) = (uint32_t)((mux_fil_in-1)<<3) + (uint32_t)(mux_fil_out-1);
+
 			printf("REG SENT = %#010x\n", *((uint32_t *)(cfg + 0)) );
-				//*((uint32_t *)(cfg + 0)) = UINT32_MAX;
+			
 
 			printf("FILTER_SELECT = CORRECT\n");
 			
