@@ -105,7 +105,7 @@ if (mode_sel == 1)
 	}
 else if(mode_sel == 2)			//MUX OUT CHANNEL SELECTION
 	{
-		printf("Select what do you want to display on CH1:\n PID_mixer = 1, INTEGRAL ERROR PID (debug) = 2, PID_CH1 = 3, PID_OFFSET_CH1 = 4, // : 5, dither_out = 6, OFFSET_PID_MIXER = 7, ERROR_SIGNAL(AFTER_LPF) <(-)> = 8  \n");
+		printf("Select what do you want to display on CH1:\n PID_mixer = 1, INTEGRAL ERROR PID (debug) = 2, PID_CH1 = 3, PID_OFFSET_CH1 = 4, PID_mixer + notch	: 5, dither_out = 6, OFFSET_PID_MIXER = 7, ERROR_SIGNAL(AFTER_LPF) <(-)> = 8  \n");
 		scanf("%d", &mux_ch1); 
 
 		printf("Select what do you want to display on CH2:\n ERROR_SIGNAL(AFTER LPF) = 1, MIXER_EXT_DDS(No filter) = 2, cosine_normal = 3, cos_scaled = 4, pd_ext_mixed = 5, phase_normal = 6, CH2 IN to OUT (see noise given by RP) = 7, MIXER_INT_DDS(No Filter) = 8 \n");
@@ -474,16 +474,10 @@ else if(mode_sel == 9)
 	{
 	printf("Select the INPUT of the filter:\nmixer_internal_DDS : 1 (default); mixer_external_DDS : 2\n");
 	scanf("%d", &mux_fil_in);
-	printf("Select the filter at the output of the mixer module:\nIIR_1M_leaky : 1; IIR_600k_leaky : 2; IIR_CONFIGURABLE_1st_order : 3; IIR_CONFIGURABLE_2nd_order : 4; IIR_butterworth_1M_2nd: 5; IIR_butter_500k_2nd: 6; IIR_2nd_1M: 7 no_filter: 8   \n");
+	printf("Select the filter at the output of the mixer module:\nIIR_1M_leaky : 1; IIR_600k_leaky : 2; IIR_153kHz : 3; IIR_notch : 4; // : 5;  // : 6; IIR_2nd_1M: 7 no_filter: 8   \n");
 	scanf("%d", &mux_fil_out);
 
 	printf("mux_fil_in = %d,mux_fil_out =%d, mux_fil_in uint32 = %zu, mux_fil_out uint32 = %zu\n", mux_fil_in, mux_fil_out, (uint32_t)(mux_fil_in), (uint32_t)(mux_fil_out-1));
-	
-	if( (mux_fil_out == 3) || (mux_fil_out == 4)) 
-	{
-		printf ("Configure the filter first:\nIf first order selected select 0 for a2 and b2\n");
-	
-	}
 
 	*((uint32_t *)(cfg + 0)) = START; //Switch the FSM to ready
 
